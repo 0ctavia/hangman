@@ -26,7 +26,7 @@
         "bowtie"
     
     ]
-    let guessableWord;
+    let guessableWord, letter, lives;
 
 //creating table
 function tableCreation(guessableWord) {
@@ -83,6 +83,7 @@ document.getElementById("run").addEventListener( "click", () => {
     console.log(start);
     const img = document.getElementById("image");
     img.setAttribute("src", start);
+    img.setAttribute("height","70vh");
     
     //Second - the word
     //-----------------
@@ -93,13 +94,36 @@ document.getElementById("run").addEventListener( "click", () => {
     //Third - the table
     //-----------------
     tableCreation(guessableWord);
+    letter = prompt ("Please guess a letter");
+    lives = 10;
+    //Shred the guessableWord
+    //----------------------
+    let shreddedWord = new Array;
+    shreddedWord = guessableWord.split('');
+    console.log(shreddedWord);
+    document.getElementById("run").disabled = true;
 });
-// TO DO LIST : 
-//add in the clicker : prompt for a letter
+  
+    //Check the letter
+function letterChecker (letter) {
+    if (letter==null) {
+        letter = prompt ("Please guess a letter");
+    }
+    else {
+        for (i = 0; i<shreddedWord.length; i++){
+        let temp = shreddedWord[i];
+            if (temp == letter){
+            //make the letter appear
+            }
+            else{
+            //make another image appear
+            lives-=1;
+            alert ("You have "+lives+" left.");
+            }
+        }
+    }
 
-    //take letter from prompt -> declare variable globally
-    //make array of all letters of guessableWord -> function shredIt
-
+}; 
     //is it in the array ->make function locate, returns a true or false
     //if not in array, so false, make function hangHim, increment the images 
     // if in the array, so true, make function showLetter, grab the columns in the table corresponding to the letter and show the letter
