@@ -27,9 +27,14 @@
     
     ]
     let guessableWord, letter, lives;
+    let count = 0 ;
+    let imagecounter = 0;
+    let guess = new Boolean;
+    guess = false ;
+    let shreddedWord = new Array;
 
-//creating table
-function tableCreation(guessableWord) {
+    //creating table
+    function tableCreation(guessableWord) {
     //console.log("imma make a table");
     const target = document.getElementById("target");
 
@@ -37,7 +42,7 @@ function tableCreation(guessableWord) {
     const tableBody = document.createElement("tbody");
     
     let wordLength = guessableWord.length;
-    console.log("length of the word is "+wordLength);
+    //console.log("length of the word is "+wordLength);
 
    //create rows
     for (i = 0 ; i < 2 ; i++){
@@ -46,7 +51,7 @@ function tableCreation(guessableWord) {
         //create columns
         for (j = 0; j < wordLength ; j++) {
             const col = document.createElement("td");
-            col.setAttribute("id", "row"+i+"col"+j);
+            col.setAttribute("id", "row"+(i+1)+"col"+(j+1));
             //create numbers in first row
             if (i == 0) {
                 col.innerText = j+1;
@@ -59,7 +64,7 @@ function tableCreation(guessableWord) {
                 if (selector == 1 && counter < 3) {
                     counter = counter + 1; 
                     //this is to avoid too much hints
-                    console.log("the counter is "+counter);
+                    //console.log("the counter is "+counter);
                     col.innerText = guessableWord[j];
                 }
             }
@@ -73,60 +78,93 @@ function tableCreation(guessableWord) {
     target.appendChild(table);
     }
 
+    function letterChecker (letter) {
+       document.getElementById("run").disabled = true;
+       guess = false; 
+       console.log("letterchecker is running");
+            if (letter == null) 
+            {
+                letter = prompt ("Please guess a letter");
+            }
+            else {
+                for (i = 0; i<shreddedWord.length; i++){
+                    let tempWord = shreddedWord[i];
+                    if (tempWord == letter){
+                        console.log("you guessed right");
+                        guess = true ;
+                        //the letters corresponding to the index should be made visible
+                        makeVisible(i);
+                     }
+                }                
+                if (guess == false)
+                {
+                    console.log("you guessed wrong");
+                    lives = lives-1;
+                    imagecounter+=1;
+                    const followup = hangmanimages[imagecounter];
+                    const img = document.getElementById("image");
+                    img.setAttribute("src", followup);
+                    img.setAttribute("height","350px");
+                    }
+                else
+                {
+                    count+=1;
 
+                    }    
+               
+            }
+            alert ("You have "+lives+" lives left."); 
+            stopLight(count);
+           
+    }; 
 
-document.getElementById("run").addEventListener( "click", () => {
-    //setup must start with first image, select word and generate the table
-    //First - the image
-    //----------------
-    const start = hangmanimages[0];
-    console.log(start);
-    const img = document.getElementById("image");
-    img.setAttribute("src", start);
-    img.setAttribute("height","70vh");
-    
-    //Second - the word
-    //-----------------
-    let wordSelect = Math.floor((Math.random()*9)+1);
-    guessableWord = guessableWords[wordSelect];
-    console.log(guessableWord);
+    function stopLight(count){
+        console.log("stoplight is running")    
+        if (count < (guessableWord.length)-2 && lives !== 0){
+            letter = prompt ("Give another letter")            
+            letterChecker(letter);
+                        }
+    }
 
-    //Third - the table
-    //-----------------
-    tableCreation(guessableWord);
-    letter = prompt ("Please guess a letter");
-    lives = 10;
-    //Shred the guessableWord
-    //----------------------
-    let shreddedWord = new Array;
-    shreddedWord = guessableWord.split('');
-    console.log(shreddedWord);
-    document.getElementById("run").disabled = true;
-});
-  
-    //Check the letter
-function letterChecker (letter) {
-    if (letter==null) {
+    function makeVisible(i){
+            console.log("makevisible function is running");
+            var toShow = shreddedWord[i];
+            var pickCol = "row2col"+(i+1);
+            document.getElementById(pickCol).innerText = toShow;
+    };
+
+    document.getElementById("run").addEventListener( "click", () => {
+        //setup must start with first image, select word and generate the table
+        //First - the image
+        //----------------
+        const start = hangmanimages[0];
+        const img = document.getElementById("image");
+        img.setAttribute("src", start);
+        img.setAttribute("height","350px");
+
+        //Second - the word
+        //-----------------
+        let wordSelect = Math.floor((Math.random()*9)+1);
+        guessableWord = guessableWords[wordSelect];
+        console.log(guessableWord);
+
+        //Third - the table
+        //-----------------
+        tableCreation(guessableWord);
         letter = prompt ("Please guess a letter");
-    }
-    else {
-        for (i = 0; i<shreddedWord.length; i++){
-        let temp = shreddedWord[i];
-            if (temp == letter){
-            //make the letter appear
-            }
-            else{
-            //make another image appear
-            lives-=1;
-            alert ("You have "+lives+" left.");
-            }
-        }
-    }
+        console.log("The letter is "+letter);
+        lives = 10;
+        
+        //Call the checker function as long as there are empty spaces in the table
+        //Shred the guessableWord
+        shreddedWord = guessableWord.split('');
+        console.log(shreddedWord);
+        letterChecker(letter);
+        });
 
-}; 
-    //is it in the array ->make function locate, returns a true or false
-    //if not in array, so false, make function hangHim, increment the images 
-    // if in the array, so true, make function showLetter, grab the columns in the table corresponding to the letter and show the letter
-    //the locate function should return both index and the true/false thing
+    window.onload = () => {
+        document.getElementById("run").disabled = false;
+    }
 })();
-
+//if I want to do this with buttons instead of prompt, I can always do it with a "onClick" attribute in my HTML. If after the = symbol you put the name of the function that the onClick should send something to, it will.
+//In the example I saw it was onClick="GFG_click(this.id)", which sent the id of the <> to the function called GFG_click in the javascript
